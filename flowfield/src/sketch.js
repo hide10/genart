@@ -2,8 +2,7 @@ const PARTICLE_COUNT = 3500;
 const NOISE_SCALE    = 0.003;
 const CELL_SIZE      = 10;
 
-const SPEEDS = [0.7, 2.0, 4.5];
-let speedIdx = 1;
+let speedTime = 0;  // 時間で自動変化するスピード用
 
 const PALETTES = [
   [ {h:190,s:100,l:45}, {h:200,s:95,l:48}, {h:210,s:90,l:50},
@@ -20,23 +19,22 @@ const PALETTES = [
     {h:250,s:80,l:48},  {h:295,s:92,l:52} ],
 ];
 
-let canvas, ctx, field, particles, menu, overlay;
+let canvas, ctx, field, particles;
 let paletteIdx = 0;
 let mouse = null;
 let W, H;
-let holdTimer = null;
-let holdFired = false;
 
-function currentSpeed() { return SPEEDS[speedIdx]; }
-
-function newSeed() {
-  noise.setSeed(Math.floor(Math.random() * 1e6));
-  ctx.clearRect(0, 0, W, H);
-  spawnParticles();
+// スピードはサイン波で自動変化（0.5〜4.5）
+function currentSpeed() {
+  speedTime += 0.003;
+  return 0.5 + (Math.sin(speedTime) * 0.5 + 0.5) * 4.0;
 }
 
-function nextPalette() {
-  paletteIdx = (paletteIdx + 1) % PALETTES.length;
+function randomizeAll() {
+  noise.setSeed(Math.floor(Math.random() * 1e6));
+  field.randomize();
+  paletteIdx = Math.floor(Math.random() * PALETTES.length);
+  speedTime  = Math.random() * Math.PI * 2;  // 位相もランダムに
   ctx.clearRect(0, 0, W, H);
   spawnParticles();
 }
@@ -73,35 +71,9 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// --- メニュー ---
-function openMenu()  { menu.hidden = false; overlay.hidden = false; }
-function closeMenu() { menu.hidden = true;  overlay.hidden = true; }
-
-function updateSpeedButtons() {
-  ['btn-slow', 'btn-mid', 'btn-fast'].forEach((id, i) => {
-    document.getElementById(id).classList.toggle('active', i === speedIdx);
-  });
-}
-
-// --- 長押し ---
-function startHold() {
-  holdFired = false;
-  holdTimer = setTimeout(() => {
-    holdFired = true;
-    openMenu();
-  }, 500);
-}
-
-function cancelHold() {
-  clearTimeout(holdTimer);
-  holdTimer = null;
-}
-
 function init() {
-  canvas  = document.getElementById('c');
-  ctx     = canvas.getContext('2d');
-  menu    = document.getElementById('menu');
-  overlay = document.getElementById('overlay');
+  canvas = document.getElementById('c');
+  ctx    = canvas.getContext('2d');
 
   resize();
 
@@ -112,48 +84,25 @@ function init() {
     Math.ceil(rows * CELL_SIZE * NOISE_SCALE * 10),
     NOISE_SCALE * 10
   );
-
+  field.randomize();
   spawnParticles();
   loop();
 
-  // メニューボタン
-  document.getElementById('btn-seed').addEventListener('click', () => { newSeed(); closeMenu(); });
-  document.getElementById('btn-palette').addEventListener('click', () => { nextPalette(); closeMenu(); });
-  ['btn-slow', 'btn-mid', 'btn-fast'].forEach((id, i) => {
-    document.getElementById(id).addEventListener('click', () => {
-      speedIdx = i;
-      updateSpeedButtons();
-      ctx.clearRect(0, 0, W, H);
-      spawnParticles();
-      closeMenu();
-    });
-  });
-  document.getElementById('btn-close').addEventListener('click', closeMenu);
-  overlay.addEventListener('click', closeMenu);
-
-  // マウス
-  canvas.addEventListener('mousedown', () => startHold());
-  canvas.addEventListener('mousemove', e => {
-    cancelHold();
-    mouse = { x: e.clientX, y: e.clientY };
-  });
-  canvas.addEventListener('mouseup', () => {
-    cancelHold();
-    if (!holdFired) newSeed();
-  });
-  canvas.addEventListener('mouseleave', () => { mouse = null; });
-
-  // タッチ
-  canvas.addEventListener('touchstart', () => startHold(), { passive: true });
-  canvas.addEventListener('touchmove', e => {
-    cancelHold();
+  // タップ / クリック → 全部ランダム変更
+  let touchMoved = false;
+  canvas.addEventListener('touchstart', () => { touchMoved = false; }, { passive: true });
+  canvas.addEventListener('touchmove',  e => {
+    touchMoved = true;
     mouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   }, { passive: true });
   canvas.addEventListener('touchend', () => {
-    cancelHold();
     mouse = null;
-    if (!holdFired) newSeed();
+    if (!touchMoved) randomizeAll();
   });
+
+  canvas.addEventListener('click', () => randomizeAll());
+  canvas.addEventListener('mousemove', e => { mouse = { x: e.clientX, y: e.clientY }; });
+  canvas.addEventListener('mouseleave', () => { mouse = null; });
 
   window.addEventListener('resize', () => { resize(); spawnParticles(); });
 }

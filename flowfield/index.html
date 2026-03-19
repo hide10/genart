@@ -8,104 +8,29 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: #0a0a0f; overflow: hidden; }
     canvas { display: block; }
-
-    /* 長押しメニュー */
-    #overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 10;
-    }
-    #menu {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 20;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-      background: rgba(20,20,28,0.92);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 20px;
-      padding: 24px 28px;
-      backdrop-filter: blur(12px);
-      min-width: 240px;
-    }
-    #menu[hidden], #overlay[hidden] { display: none !important; }
-    #menu button {
-      width: 100%;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: #fff;
-      font: 15px/1 'SF Mono', 'Fira Code', monospace;
-      padding: 13px 20px;
-      border-radius: 12px;
-      cursor: pointer;
-      letter-spacing: 0.05em;
-      transition: background 0.15s;
-    }
-    #menu button:hover, #menu button:active {
-      background: rgba(255,255,255,0.15);
-    }
-    #btn-close {
-      background: transparent !important;
-      border-color: rgba(255,255,255,0.08) !important;
-      color: rgba(255,255,255,0.4) !important;
-      font-size: 13px !important;
-    }
-    .speed-row {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-    }
-    .speed-row .speed {
-      flex: 1;
-      font-size: 12px !important;
-      padding: 10px 4px !important;
-    }
-    .speed-row .speed.active {
-      background: rgba(255,255,255,0.2) !important;
-      border-color: rgba(255,255,255,0.35) !important;
-    }
-
     #ui {
       position: fixed;
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.25);
       font: 13px/1.6 'SF Mono', 'Fira Code', monospace;
       text-align: center;
       pointer-events: none;
       letter-spacing: 0.05em;
     }
     #ui a {
-      color: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.18);
       text-decoration: none;
       pointer-events: all;
     }
-    #ui a:hover { color: rgba(255,255,255,0.5); }
+    #ui a:hover { color: rgba(255,255,255,0.45); }
   </style>
 </head>
 <body>
   <canvas id="c"></canvas>
-
-  <!-- 長押しメニュー -->
-  <div id="menu" hidden>
-    <button id="btn-seed">🌱 新しい模様</button>
-    <button id="btn-palette">🎨 次の色</button>
-    <div class="speed-row">
-      <button id="btn-slow"  class="speed">🐢 ゆっくり</button>
-      <button id="btn-mid"   class="speed active">▶ 普通</button>
-      <button id="btn-fast"  class="speed">⚡ はやい</button>
-    </div>
-    <button id="btn-close">✕</button>
-  </div>
-  <div id="overlay" hidden></div>
-
   <div id="ui">
-    tap — new seed &nbsp;|&nbsp; hold — menu<br>
+    tap / click — new pattern &nbsp;|&nbsp; move — disturb<br>
     <a href="../">← back to gallery</a>
   </div>
   <script src="src/noise.js"></script>
