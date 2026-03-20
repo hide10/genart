@@ -3,38 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fourier Drawing — hide10 genart</title>
+  <title>Strange Attractor — hide10 genart</title>
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0a0a0f; overflow: hidden; touch-action: none; }
-    canvas { display: block; }
+    body { background: #050508; overflow: hidden; touch-action: none; }
+    canvas { display: block; width: 100vw; height: 100vh; }
     #ui {
       position: fixed;
       bottom: 24px;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.2);
       font: 13px/1.6 'SF Mono', 'Fira Code', monospace;
       text-align: center;
       pointer-events: none;
       letter-spacing: 0.05em;
     }
     #ui a {
-      color: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.15);
       text-decoration: none;
       pointer-events: all;
     }
-    #ui a:hover { color: rgba(255,255,255,0.45); }
+    #ui a:hover { color: rgba(255,255,255,0.4); }
   </style>
 </head>
 <body>
   <canvas id="c"></canvas>
   <div id="ui">
+    tap / click — new attractor<br>
     <a href="../">← back to gallery</a>
   </div>
-  <script src="src/dft.js"></script>
-  <script src="src/epicycles.js"></script>
   <script src="src/sketch.js"></script>
 </body>
 </html>

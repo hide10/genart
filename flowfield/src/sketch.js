@@ -33,8 +33,10 @@ function currentSpeed() {
 function randomizeAll() {
   noise.setSeed(Math.floor(Math.random() * 1e6));
   field.randomize();
-  paletteIdx = Math.floor(Math.random() * PALETTES.length);
-  speedTime  = Math.random() * Math.PI * 2;  // 位相もランダムに
+  // 必ず前と違うパレットを選ぶ
+  const others = PALETTES.map((_, i) => i).filter(i => i !== paletteIdx);
+  paletteIdx = others[Math.floor(Math.random() * others.length)];
+  speedTime  = Math.random() * Math.PI * 2;
   ctx.clearRect(0, 0, W, H);
   spawnParticles();
 }
